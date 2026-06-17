@@ -468,18 +468,26 @@
           ctx.fillStyle=sk; ctx.fillRect(0,0,W,H);
           drawCloud(W*0.15,H*0.1,60); drawCloud(W*0.6,H*0.07,80); drawCloud(W*0.82,H*0.17,50);
         } else if(sh==="car") {
-          const rg=ctx.createLinearGradient(0,0,0,H);
-          rg.addColorStop(0,"#b0c8e8"); rg.addColorStop(0.5,"#7a9ab8"); rg.addColorStop(1,"#3a3a3a");
-          ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
-          drawBuildings();
-          ctx.fillStyle="#484848"; ctx.fillRect(0,H*0.5,W,H*0.5);
-          ctx.strokeStyle="#ffff88"; ctx.lineWidth=3; ctx.setLineDash([20,18]);
-          [[W/2],[W/6],[W*5/6]].forEach(([lx])=>{
-            ctx.beginPath(); ctx.moveTo(lx,H*0.5); ctx.lineTo(lx,H); ctx.stroke();
+          /* full vertical highway */
+          ctx.fillStyle="#2e2e2e"; ctx.fillRect(0,0,W,H);
+          /* grass strips */
+          ctx.fillStyle="#2a5a1a"; ctx.fillRect(0,0,W*0.1,H);
+          ctx.fillStyle="#2a5a1a"; ctx.fillRect(W*0.9,0,W*0.1,H);
+          /* subtle road texture */
+          ctx.fillStyle="rgba(255,255,255,0.02)";
+          for(let y=0;y<H;y+=8){ctx.fillRect(W*0.1,y,W*0.8,4);}
+          /* edge white lines */
+          ctx.strokeStyle="#ccc"; ctx.lineWidth=3; ctx.setLineDash([]);
+          ctx.beginPath(); ctx.moveTo(W*0.1,0); ctx.lineTo(W*0.1,H); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(W*0.9,0); ctx.lineTo(W*0.9,H); ctx.stroke();
+          /* scrolling dashed lane dividers */
+          ctx.strokeStyle="#ffff88"; ctx.lineWidth=2;
+          const dashOff=(frame*3)%38;
+          ctx.setLineDash([22,16]); ctx.lineDashOffset=-dashOff;
+          [W*0.325,W*0.5,W*0.675].forEach(lx=>{
+            ctx.beginPath(); ctx.moveTo(lx,0); ctx.lineTo(lx,H); ctx.stroke();
           });
           ctx.setLineDash([]);
-          ctx.strokeStyle="#fff"; ctx.lineWidth=2;
-          ctx.beginPath(); ctx.moveTo(0,H*0.5); ctx.lineTo(W,H*0.5); ctx.stroke();
         } else if(sh==="train") {
           const tg=ctx.createLinearGradient(0,0,0,H);
           tg.addColorStop(0,"#a8d8ea"); tg.addColorStop(0.55,"#6aaa6a"); tg.addColorStop(1,"#4a7a4a");
@@ -542,32 +550,35 @@
         });
       }
 
-      /* ══ 자동차 닷지 ══ */
+      /* ══ 자동차 닷지 (top-down, 위→아래) ══ */
+      /* w=screen width, h=screen height of car */
+      const CAR_WID=26, CAR_LEN=50;
       function initCar() {
-        carPlayer={x:W/2,y:H*0.75,w:52,h:28};
-        carTarget={x:W/2,y:H*0.75};
+        carPlayer={x:W/2, y:H*0.78, w:CAR_WID, h:CAR_LEN};
+        carTarget={x:W/2, y:H*0.78};
         carObs=[]; carSpawnT=0; carScore=0; carSurvived=0;
       }
       function spawnCarObs() {
-        const fromLeft=Math.random()<0.5;
-        const speed=(5+carSurvived*0.5)*(fromLeft?1:-1);
-        const lanes=[H*0.56,H*0.63,H*0.7,H*0.77,H*0.84,H*0.91];
-        const y=lanes[Math.floor(Math.random()*lanes.length)];
+        const lanes=[W*0.175, W*0.325, W*0.5, W*0.675, W*0.825];
+        const x=lanes[Math.floor(Math.random()*lanes.length)];
+        const speed=4+carSurvived*0.45;
+        const colors=["#ff4444","#44aaff","#ffaa22","#ff44ff","#aa44ff","#ff8844","#44ffee"];
         carObs.push({
-          x:fromLeft?-70:W+70, y, w:52, h:24, vx:speed,
-          color:["#ff4444","#44aaff","#ffaa22","#44ff88","#ff44ff"][Math.floor(Math.random()*5)],
+          x, y:-CAR_LEN, w:CAR_WID, h:CAR_LEN,
+          vy:speed, color:colors[Math.floor(Math.random()*colors.length)],
         });
       }
       function updateCar(dt) {
         carPlayer.x+=(carTarget.x-carPlayer.x)*0.18;
         carPlayer.y+=(carTarget.y-carPlayer.y)*0.18;
-        carPlayer.x=Math.max(carPlayer.w/2,Math.min(W-carPlayer.w/2,carPlayer.x));
-        carPlayer.y=Math.max(H*0.5+carPlayer.h/2,Math.min(H-carPlayer.h/2,carPlayer.y));
-        carObs.forEach(o=>o.x+=o.vx);
-        carObs=carObs.filter(o=>o.x>-100&&o.x<W+100);
+        /* player stays within road lanes, any vertical position */
+        carPlayer.x=Math.max(W*0.1+carPlayer.w/2, Math.min(W*0.9-carPlayer.w/2, carPlayer.x));
+        carPlayer.y=Math.max(carPlayer.h/2, Math.min(H-carPlayer.h/2, carPlayer.y));
+        carObs.forEach(o=>o.y+=o.vy);
+        carObs=carObs.filter(o=>o.y<H+CAR_LEN+10);
         for(const o of carObs) {
-          if(Math.abs(carPlayer.x-o.x)<carPlayer.w/2+o.w/2-6 &&
-             Math.abs(carPlayer.y-o.y)<carPlayer.h/2+o.h/2-6) {
+          if(Math.abs(carPlayer.x-o.x)<(carPlayer.w+o.w)/2-5 &&
+             Math.abs(carPlayer.y-o.y)<(carPlayer.h+o.h)/2-5) {
             endDodgeLevel("car"); return;
           }
         }
@@ -667,12 +678,21 @@
         return `rgb(${Math.max(0,r-amt)},${Math.max(0,g-amt)},${Math.max(0,b-amt)})`;
       }
 
+      function drawCarVertical(cx, cy, w, h, bodyColor, facingDown) {
+        /* draw a top-down car oriented vertically */
+        ctx.save();
+        ctx.translate(cx, cy);
+        /* rotate so drawTopDownCar (which faces right) faces down or up */
+        ctx.rotate(facingDown ? Math.PI/2 : -Math.PI/2);
+        /* pass h as "w" (long axis) and w as "h" (short axis) */
+        drawTopDownCar(0, 0, h, w, bodyColor, 1);
+        ctx.restore();
+      }
       function drawCar() {
-        carObs.forEach(o=>{
-          drawTopDownCar(o.x, o.y, o.w, o.h, o.color, o.vx>0?1:-1);
-        });
-        /* player car — green */
-        drawTopDownCar(carPlayer.x, carPlayer.y, carPlayer.w, carPlayer.h, "#22cc66", 1);
+        /* obstacle cars face DOWN (toward player) */
+        carObs.forEach(o=>drawCarVertical(o.x, o.y, o.w, o.h, o.color, true));
+        /* player car faces UP (away from incoming traffic) */
+        drawCarVertical(carPlayer.x, carPlayer.y, carPlayer.w, carPlayer.h, "#22cc66", false);
         ctx.fillStyle="#44ff88"; ctx.font="bold 11px monospace"; ctx.textAlign="center";
         ctx.fillText("TIME "+carSurvived.toFixed(1)+"s",W/2,H-10);
       }
@@ -954,9 +974,9 @@
 
       /* ── 레벨 결과 ── */
       function showLevelResult(pass) {
-        if(pass&&level<LEVELS.length-1) {
-          document.getElementById("lvup-title").textContent=lv().name+" CLEAR!";
-          document.getElementById("lvup-sub").textContent="→ NEXT: LV"+(level+2)+" "+LEVELS[level+1].name;
+        if(level<LEVELS.length-1) {
+          document.getElementById("lvup-title").textContent=lv().name+(pass?" CLEAR!":" NEXT STAGE");
+          document.getElementById("lvup-sub").textContent="→ LV"+(level+2)+" "+LEVELS[level+1].name;
           document.getElementById("lvup-overlay").classList.add("show");
           setTimeout(()=>{document.getElementById("lvup-overlay").classList.remove("show");level++;resetLevel();},2000);
         } else {showFinalResult();}
