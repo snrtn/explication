@@ -628,6 +628,19 @@
           ],
         },
 
+        {
+          c: "damage",
+          e: "Touch Disease",
+          k: "Touch Disease",
+          d: "Défaut propre à l'iPhone 6 Plus : à force d'être plié légèrement dans une poche ou lors des utilisations quotidiennes, la carte mère se fissure imperceptiblement à l'emplacement de la puce tactile. Les connexions deviennent instables, et une bande grise clignotante finit par apparaître en haut de l'écran.",
+          sy: [
+            "Une bande grise ou multicolore scintillante apparaît en haut de l'écran",
+            "Le tactile répond de moins en moins bien ou plus du tout",
+            "Appuyer légèrement sur les bords du téléphone fait revenir le tactile temporairement",
+            "Spécifique à l'iPhone 6 Plus",
+          ],
+        },
+
         // ── COMPOSANTS ──
         {
           c: "parts",
@@ -933,6 +946,49 @@
           ],
         },
 
+        {
+          c: "parts",
+          e: "Half Board",
+          k: "Demi-carte",
+          d: "À partir de l'iPhone X, Apple a divisé la carte mère en deux étages superposés — la partie A et la partie B — reliés entre eux par des connecteurs. Cette conception empile les puces en hauteur plutôt qu'en longueur, ce qui permet de loger une carte plus puissante dans un téléphone plus fin.",
+          sy: [
+            "Après une chute, plusieurs fonctions tombent en panne simultanément — les deux parties peuvent se déconnecter légèrement",
+          ],
+        },
+
+        {
+          c: "parts",
+          e: "Donor Board",
+          k: "Carte donneuse",
+          d: "Carte mère utilisée uniquement comme source de pièces de récupération. Quand un composant spécifique est introuvable à l'achat séparément, il est prélevé sur une carte similaire qui est en panne pour une autre raison et ne peut plus être réparée.",
+          sy: [],
+        },
+
+        {
+          c: "parts",
+          e: "Tristar / Hydra IC",
+          k: "Puce Tristar (contrôleur USB)",
+          d: "La puce Apple qui identifie en temps réel ce qui est branché sur le port Lightning : un simple chargeur, un câble de données, ou un accessoire certifié. Si elle est endommagée — souvent à cause de chargeurs non certifiés qui délivrent une tension incorrecte — le téléphone ne reconnaît plus le chargeur ou l'ordinateur, même si le port physique est intact.",
+          sy: [
+            "Le chargeur est reconnu par intermittence, ou pas du tout",
+            "Le pourcentage de batterie ne monte plus même câble branché",
+            "L'ordinateur ne détecte pas le téléphone malgré un câble fonctionnel",
+            "Apparu fréquemment après l'utilisation prolongée de chargeurs non certifiés",
+          ],
+        },
+
+        {
+          c: "parts",
+          e: "Backlight Filter",
+          k: "Filtre de rétroéclairage",
+          d: "Un composant de protection sur le circuit qui alimente la lumière de l'écran. Il agit comme un fusible : en cas de surtension, il fond et coupe le circuit pour protéger le reste de la carte. Une fois grillé, il coupe entièrement la lumière de l'écran.",
+          sy: [
+            "L'écran devient soudainement très sombre ou noir après une chute ou un remplacement d'écran",
+            "En éclairant l'écran avec une lampe torche, on distingue l'image très faiblement",
+            "Le téléphone fonctionne normalement — sons et vibrations présents",
+          ],
+        },
+
         // ── DIAGNOSTIC ──
         {
           c: "diag",
@@ -977,6 +1033,42 @@
             "Erreur 53 → remplacement non autorisé du bouton Home",
             "Erreur 14 → batterie ou alimentation",
             "Erreur 9 → problème de connexion USB",
+          ],
+        },
+
+        {
+          c: "diag",
+          e: "Data Recovery",
+          k: "Récupération de données",
+          d: "Extraction des données personnelles d'un téléphone endommagé qui ne démarre plus : photos, contacts, messages. Elle est possible sur certaines pannes logicielles ou mécaniques, mais pas toujours — si la puce mémoire elle-même est physiquement endommagée, les données peuvent être irrécupérables.",
+          sy: [],
+        },
+
+        {
+          c: "diag",
+          e: "Board Swap",
+          k: "Remplacement de carte mère",
+          d: "Remplacement complet de la carte mère par une autre carte fonctionnelle. Toutes les données personnelles stockées sur l'ancienne carte sont perdues car la mémoire est soudée à la carte et ne peut pas être transférée simplement. Les fonctions de sécurité comme Face ID et Touch ID sont liées à la carte d'origine.",
+          sy: [],
+        },
+
+        {
+          c: "diag",
+          e: "NAND Swap",
+          k: "Transfert de mémoire NAND",
+          d: "Déplacement de la puce mémoire d'une carte mère endommagée vers une autre carte compatible. C'est une opération extrêmement délicate, car cette puce stocke à la fois le système iOS et toutes les données personnelles. Elle est réalisée quand la carte mère est irréparable mais que la mémoire est intacte.",
+          sy: [],
+        },
+
+        {
+          c: "diag",
+          e: "Power Rail Short",
+          k: "Court-circuit sur rail d'alimentation",
+          d: "Un rail d'alimentation est une ligne électrique qui traverse la carte mère pour distribuer l'énergie à un groupe de composants. Un court-circuit sur ce rail provoque une chute d'alimentation pour tous les composants qui en dépendent, et génère souvent de la chaleur.",
+          sy: [
+            "Le téléphone chauffe immédiatement dès que la batterie est connectée",
+            "Il s'éteint instantanément dès qu'on branche la batterie",
+            "Il ne démarre pas et reste froid — signe que le rail est totalement coupé",
           ],
         },
 
@@ -1098,6 +1190,30 @@
             "Plus aucun réseau mobile après une restauration",
             "L'IMEI est affiché 000000",
             "La version du logiciel de communication est absente dans les réglages",
+          ],
+        },
+
+        {
+          c: "lock",
+          e: "Parts Pairing",
+          k: "Jumelage de composants",
+          d: "Système Apple qui associe certains composants — écran, batterie, caméra, Touch ID, Face ID — de façon unique et permanente à la carte mère du téléphone dès la fabrication. Si une pièce est remplacée sans passer par les outils officiels Apple, iOS détecte que la pièce n'est pas 'reconnue' par cette carte et affiche un avertissement, voire désactive certaines fonctions.",
+          sy: [
+            "Message 'pièce inconnue' ou 'pièce importante remplacée' dans les réglages",
+            "La santé de la batterie affiche 'Service' ou disparaît après un remplacement",
+            "Face ID ou Touch ID désactivé définitivement après changement du composant concerné",
+          ],
+        },
+
+        {
+          c: "lock",
+          e: "Non-genuine Part Warning",
+          k: "Avertissement de pièce non originale",
+          d: "Notification affichée par iOS quand un composant remplacé n'a pas été jumelé à la carte mère via les outils officiels Apple. Ce message n'empêche pas le téléphone de fonctionner pour l'essentiel, mais certaines fonctions avancées peuvent être limitées ou désactivées selon la pièce concernée.",
+          sy: [
+            "Notification 'pièce importante iPhone remplacée' dans les réglages",
+            "La santé de la batterie affiche 'Service' au lieu d'un pourcentage",
+            "Peut apparaître même avec une pièce de qualité originale si elle n'a pas été jumelée",
           ],
         },
       ];
