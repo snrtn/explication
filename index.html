@@ -42,13 +42,22 @@
         border-bottom: 1px solid var(--b);
         padding: 14px 18px 12px;
       }
-      .hdr h1 {
-        font-size: 16px;
-        font-weight: 700;
+      .hdr-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
         margin-bottom: 10px;
       }
-      .hdr h1 span {
+      .hdr-name {
+        font-size: 15px;
+        font-weight: 700;
         color: var(--a);
+        line-height: 1.2;
+      }
+      .hdr-sub {
+        font-size: 11px;
+        color: var(--m);
+        margin-top: 1px;
       }
       .sw {
         position: relative;
@@ -263,6 +272,17 @@
   </head>
   <body>
     <div class="hdr">
+      <div class="hdr-title">
+        <img
+          src="./logo.svg"
+          alt=""
+          style="width: 32px; height: 32px; flex-shrink: 0"
+        />
+        <div>
+          <div class="hdr-sub">Kim Reparation</div>
+          <div class="hdr-name">Explication des mots</div>
+        </div>
+      </div>
       <div class="sw">
         <svg
           width="15"
@@ -278,7 +298,7 @@
         <input
           id="q"
           type="search"
-          placeholder="Rechercher un terme..."
+          placeholder="Rechercher un mot..."
           autocomplete="off"
           spellcheck="false"
         />
@@ -291,6 +311,15 @@
       <div class="tab" data-c="parts">Composants</div>
       <div class="tab" data-c="diag">Diagnostic</div>
       <div class="tab" data-c="lock">Verrouillage</div>
+    </div>
+    <div
+      id="qinfo"
+      style="display: none; padding: 0 18px 0; margin-bottom: -4px"
+    >
+      <div style="font-size: 13px; color: var(--m)">
+        Résultats pour
+        <span id="qword" style="color: var(--t); font-weight: 600"></span>
+      </div>
     </div>
     <div class="lst" id="lst"></div>
     <script>
@@ -1257,6 +1286,14 @@
 
       function render() {
         const q = searchQ.trim().toLowerCase();
+        const qinfo = document.getElementById("qinfo");
+        const qword = document.getElementById("qword");
+        if (q) {
+          qword.textContent = "« " + searchQ.trim() + " »";
+          qinfo.style.display = "block";
+        } else {
+          qinfo.style.display = "none";
+        }
         const lst = document.getElementById("lst");
         let html = "",
           count = 0;
